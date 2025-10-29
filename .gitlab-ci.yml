@@ -100,19 +100,18 @@ deploy_to_ec2:
     - mkdir -p ~/.ssh
     - echo "$EC2_SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+    - echo "🔍 Checking EC2 host reachability..."
+    - ping -c 2 $EC2_HOST || echo "⚠️ Unable to ping EC2"
+    - echo "🔑 Attempting to fetch SSH key..."
+    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts || (echo "❌ SSH keyscan failed!" && exit 1)
   script:
     - echo "🚀 Deploying application to EC2..."
     - |
-      ssh $EC2_USER@$EC2_HOST "
+      ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "
         cd /home/ubuntu/BugTrackingSystem &&
-        echo '🧹 Stopping old containers...'
         docker-compose down &&
-        echo '📦 Pulling latest images...'
         docker-compose pull &&
-        echo '🧱 Rebuilding and starting containers...'
-        docker-compose up -d --build &&
-        echo '✅ Deployment completed successfully!'
+        docker-compose up -d --build
       "
   environment:
     name: production
