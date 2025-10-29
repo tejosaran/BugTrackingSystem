@@ -35,27 +35,26 @@ build_and_push:
 
   only:
     - main
-
-# ---------- DEPLOY TO EC2 ----------
-deploy_to_ec2:
-  stage: deploy
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh-client
-    - mkdir -p ~/.ssh
-    - echo "$EC2_SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
-  script:
-    - echo "Deploying application on EC2..."
-    - ssh $EC2_USER@$EC2_HOST "
-      cd /home/ubuntu/BugTrackingSystem &&
-      docker-compose down &&
-      docker-compose pull &&
-      docker-compose up -d --build
-      "
-  environment:
-    name: production
-    url: http://$EC2_HOST
-  only:
-    - main
+# # ---------- DEPLOY TO EC2 ----------
+# deploy_to_ec2:
+#   stage: deploy
+#   image: alpine:latest
+#   before_script:
+#     - apk add --no-cache openssh-client
+#     - mkdir -p ~/.ssh
+#     - echo "$EC2_SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+#     - chmod 600 ~/.ssh/id_rsa
+#     - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+#   script:
+#     - echo "Deploying application on EC2..."
+#     - ssh $EC2_USER@$EC2_HOST "
+#       cd /home/ubuntu/BugTrackingSystem &&
+#       docker-compose down &&
+#       docker-compose pull &&
+#       docker-compose up -d --build
+#       "
+#   environment:
+#     name: production
+#     url: http://$EC2_HOST
+#   only:
+#     - main
