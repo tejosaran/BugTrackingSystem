@@ -3,39 +3,64 @@ image: docker:latest
 services:
   - docker:dind
 
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
 stages:
   - build
   - push
   - deploy
 
-variables:
-  DOCKER_DRIVER: overlay2
+before_script:
+  # Check docker and login to DockerHub
+  - docker info
+  - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
 
+# ---------------- BUILD STAGE ----------------
 build:
   stage: build
   script:
-    - docker-compose build
+    - echo "Building Docker images using docker-compose..."
+    - docker compose -f docker-compose.yml build
+    - docker images
+  artifacts:
+    expire_in: 1 hour
+  only:
+    - main
 
+# ---------------- PUSH STAGE ----------------
 push_to_dockerhub:
   stage: push
   script:
-    - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+    - echo "Tagging and pushing images to DockerHub..."
     - docker tag frontend:latest $DOCKERHUB_USERNAME/frontend:latest
     - docker tag backend:latest $DOCKERHUB_USERNAME/backend:latest
     - docker push $DOCKERHUB_USERNAME/frontend:latest
     - docker push $DOCKERHUB_USERNAME/backend:latest
+  only:
+    - main
+  dependencies:
+    - build
 
+# ---------------- DEPLOY STAGE ----------------
 deploy:
   stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client docker-cli
   script:
-    - apt-get update -y
-    - apt-get install -y openssh-client
+    - echo "Deploying to EC2..."
     - mkdir -p ~/.ssh
     - echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "
+      docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD &&
       docker pull $DOCKERHUB_USERNAME/frontend:latest &&
       docker pull $DOCKERHUB_USERNAME/backend:latest &&
-      docker-compose down &&
-      docker-compose up -d
+      cd /home/$EC2_USER/bug-tracking-system &&
+      docker compose down &&
+      docker compose up -d
       "
+  only:
+    - main
