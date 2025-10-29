@@ -1,45 +1,54 @@
 stages:
   - build
+  - push
   - deploy
 
 variables:
-  DOCKER_REGISTRY: docker.io/tejosaran # 👈 Replace with your Docker Hub username
-  FRONTEND_IMAGE: $DOCKER_REGISTRY/bugtrackingsystem-frontend
-  BACKEND_IMAGE: $DOCKER_REGISTRY/bugtrackingsystem-backend
+  FRONTEND_IMAGE: $DOCKER_REGISTRY/frontend
+  BACKEND_IMAGE: $DOCKER_REGISTRY/backend
 
-# ---------- COMMON LOGIN ----------
+# ---------- COMMON: Authenticate Docker Hub ----------
 before_script:
   - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
-# ---------- BUILD & PUSH FRONTEND ----------
-build_and_push_frontend:
+# ---------- STAGE 1: Build Frontend ----------
+build_frontend:
   stage: build
   image: docker:latest
   services:
     - docker:dind
   script:
-    - echo "🚀 Building Angular Frontend Docker image..."
+    - echo "Building Angular Frontend Docker image..."
     - docker build -t $FRONTEND_IMAGE:latest ./frontend
-    - echo "📤 Pushing Frontend image to Docker Hub..."
-    - docker push $FRONTEND_IMAGE:latest
   only:
     - main
 
-# ---------- BUILD & PUSH BACKEND ----------
-build_and_push_backend:
+# ---------- STAGE 2: Build Backend ----------
+build_backend:
   stage: build
   image: docker:latest
   services:
     - docker:dind
   script:
-    - echo "🚀 Building Spring Boot Backend Docker image..."
+    - echo "Building Spring Boot Backend Docker image..."
     - docker build -t $BACKEND_IMAGE:latest ./backend
-    - echo "📤 Pushing Backend image to Docker Hub..."
+  only:
+    - main
+
+# ---------- STAGE 3: Push to Docker Hub ----------
+push_images:
+  stage: push
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "Pushing images to Docker Hub..."
+    - docker push $FRONTEND_IMAGE:latest
     - docker push $BACKEND_IMAGE:latest
   only:
     - main
 
-# ---------- DEPLOY TO EC2 ----------
+# ---------- STAGE 4: Deploy to EC2 ----------
 deploy_to_ec2:
   stage: deploy
   image: alpine:latest
@@ -50,10 +59,9 @@ deploy_to_ec2:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
   script:
-    - echo "🚀 Deploying latest version to EC2..."
+    - echo "Deploying application on EC2..."
     - ssh $EC2_USER@$EC2_HOST "
       cd /path/to/BugTrackingSystem &&
-      git pull origin main &&
       docker-compose down &&
       docker-compose pull &&
       docker-compose up -d --build
