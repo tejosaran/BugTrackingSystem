@@ -1,20 +1,18 @@
-# Step 1: Build Angular app
+# Step 1: Build Angular App
 FROM node:18 AS build
 WORKDIR /app
 
-# Copy package files first
-COPY frontend/package*.json ./
-
-# Install dependencies
+# Copy dependency files and install packages
+COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the frontend source code
-COPY frontend/ .
+# Copy the entire frontend source code
+COPY . .
 
-# Build the Angular project (replace project-name if needed)
-RUN npm run build -- --configuration production
+# Build the Angular project
+RUN npm run build --prod
 
-# Step 2: Serve built app via nginx
+# Step 2: Serve using Nginx
 FROM nginx:alpine
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 EXPOSE 80
