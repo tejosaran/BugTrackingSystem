@@ -1,0 +1,33 @@
+stages:
+  - build
+  - push
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker-compose build
+
+push_to_dockerhub:
+  stage: push
+  script:
+    - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+    - docker tag frontend:latest $DOCKERHUB_USERNAME/frontend:latest
+    - docker tag backend:latest $DOCKERHUB_USERNAME/backend:latest
+    - docker push $DOCKERHUB_USERNAME/frontend:latest
+    - docker push $DOCKERHUB_USERNAME/backend:latest
+
+deploy:
+  stage: deploy
+  script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "
+      docker pull $DOCKERHUB_USERNAME/frontend:latest &&
+      docker pull $DOCKERHUB_USERNAME/backend:latest &&
+      docker-compose down &&
+      docker-compose up -d
+      "
