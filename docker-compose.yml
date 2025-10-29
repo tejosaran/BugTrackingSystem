@@ -5,6 +5,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: backend:latest # ✅ Add this line
     container_name: backend
     ports:
       - "8080:8080"
@@ -15,6 +16,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: frontend:latest # ✅ Add this line
     container_name: frontend
     ports:
       - "80:80"
