@@ -1,0 +1,403 @@
+<!-- <div class="container-fluid mt-4">
+  <h3 class="text-center mb-4">Project Tickets Board</h3>
+
+  
+  <div class="text-end mb-3">
+    <button *ngIf="isTester" class="btn btn-success btn-sm" (click)="raiseTicket()">
+      ➕ Raise Ticket
+    </button>
+  </div>
+
+  <div class="row d-flex flex-nowrap overflow-auto">
+   
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white text-center fw-bold">OPEN</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['OPEN']?.length; else noOpen">
+            <div
+              *ngFor="let t of groupedTickets['OPEN']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+
+              
+                <div *ngIf="isAdmin" class="mt-2">
+                  <label for="assignSelect{{ t.id }}" class="form-label small text-muted">
+                    Assign Developer:
+                  </label>
+                  <select
+                    id="assignSelect{{ t.id }}"
+                    class="form-select form-select-sm mb-2"
+                    [(ngModel)]="t.assigneeId"
+                  >
+                    <option value="" disabled selected>Select Developer</option>
+                    <option *ngFor="let dev of developers" [value]="dev.id">
+                      {{ dev.firstName }} {{ dev.lastName }}
+                    </option>
+                  </select>
+
+                  <button
+                    class="btn btn-sm btn-outline-success w-100"
+                    (click)="assignTicket(t.id!)"
+                    [disabled]="!t.assigneeId"
+                  >
+                    Assign Ticket
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noOpen>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+  
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning text-dark text-center fw-bold">ASSIGNED</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['ASSIGNED']?.length; else noAssigned">
+            <div
+              *ngFor="let t of groupedTickets['ASSIGNED']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+                <button
+                  class="btn btn-sm btn-outline-primary mt-2 w-100"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noAssigned>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+  
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-dark text-center fw-bold">IN PROGRESS</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['IN_PROGRESS']?.length; else noProgress">
+            <div
+              *ngFor="let t of groupedTickets['IN_PROGRESS']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+                <button
+                  class="btn btn-sm btn-outline-primary mt-2 w-100"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noProgress>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+   
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white text-center fw-bold">DONE</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['DONE']?.length; else noDone">
+            <div
+              *ngFor="let t of groupedTickets['DONE']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+                <button
+                  class="btn btn-sm btn-outline-primary mt-2 w-100"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noDone>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+<div class="container-fluid mt-4">
+  <h3 class="text-center mb-4">Project Tickets Board</h3>
+  <div class="text-end mb-3 d-flex justify-content-end align-items-center gap-2">
+    <button *ngIf="isTester" class="btn btn-success btn-sm" (click)="raiseTicket()">
+      ➕ Raise Ticket
+    </button>
+
+    <!-- ✅ One toggle button -->
+    <button class="btn btn-outline-primary btn-sm" (click)="getMyTicketsOnly()">
+      {{ showMyTicketsOnly ? '📋 Show All Tickets' : '👤 Show My Tickets' }}
+    </button>
+  </div>
+
+  <div class="row d-flex flex-nowrap overflow-auto">
+    <!-- ✅ OPEN Tickets -->
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white text-center fw-bold">OPEN</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['OPEN']?.length; else noOpen">
+            <div
+              *ngFor="let t of groupedTickets['OPEN']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+
+                <!-- ✅ Admin: Assign Developer -->
+                <div *ngIf="isAdmin" class="mt-2">
+                  <label for="assignSelect{{ t.id }}" class="form-label small text-muted">
+                    Assign Developer:
+                  </label>
+                  <select
+                    id="assignSelect{{ t.id }}"
+                    class="form-select form-select-sm mb-2"
+                    [(ngModel)]="t.assigneeId"
+                  >
+                    <option value="" disabled selected>Select Developer</option>
+                    <option *ngFor="let dev of developers" [value]="dev.id">
+                      {{ dev.firstName }} {{ dev.lastName }}
+                    </option>
+                  </select>
+
+                  <button
+                    class="btn btn-sm btn-outline-success w-100"
+                    (click)="assignTicket(t.id!)"
+                    [disabled]="!t.assigneeId"
+                  >
+                    Assign Ticket
+                  </button>
+                </div>
+
+                <!-- ✅ Status Update (Admin / Reporter / Assigned Developer) -->
+                <div
+                  *ngIf="isAdmin || t.reporterId === userId || t.assigneeId === userId"
+                  class="mt-2"
+                >
+                  <label class="form-label small text-muted">Change Status:</label>
+                  <select class="form-select form-select-sm" [(ngModel)]="t.status">
+                    <option value="OPEN">OPEN</option>
+                    <option value="ASSIGNED">ASSIGNED</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="CLOSED">DONE</option>
+                  </select>
+                  <button
+                    class="btn btn-sm btn-outline-primary w-100"
+                    (click)="updateStatus(t, t.status || '')"
+                  >
+                    🔄 Update Status
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noOpen>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ ASSIGNED Tickets -->
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning text-dark text-center fw-bold">ASSIGNED</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['ASSIGNED']?.length; else noAssigned">
+            <div
+              *ngFor="let t of groupedTickets['ASSIGNED']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+
+                <!-- ✅ Status Update -->
+                <div
+                  *ngIf="isAdmin || t.reporterId === userId || t.assigneeId === userId"
+                  class="mt-2"
+                >
+                  <label class="form-label small text-muted">Change Status:</label>
+                  <select class="form-select form-select-sm" [(ngModel)]="t.status">
+                    <option value="OPEN">OPEN</option>
+                    <option value="ASSIGNED">ASSIGNED</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="CLOSED">DONE</option>
+                  </select>
+                  <button
+                    class="btn btn-sm btn-outline-primary w-100"
+                    (click)="updateStatus(t, t.status || '')"
+                  >
+                    🔄 Update Status
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noAssigned>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ IN PROGRESS Tickets -->
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-dark text-center fw-bold">IN PROGRESS</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['IN_PROGRESS']?.length; else noProgress">
+            <div
+              *ngFor="let t of groupedTickets['IN_PROGRESS']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+
+                <!-- ✅ Status Update -->
+                <div
+                  *ngIf="isAdmin || t.reporterId === userId || t.assigneeId === userId"
+                  class="mt-2"
+                >
+                  <label class="form-label small text-muted">Change Status:</label>
+                  <select class="form-select form-select-sm mb-2" [(ngModel)]="t.status">
+                    <option value="OPEN">OPEN</option>
+                    <option value="ASSIGNED">ASSIGNED</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="CLOSED">DONE</option>
+                  </select>
+
+                  <button
+                    class="btn btn-sm btn-outline-primary w-100"
+                    (click)="updateStatus(t, t.status || '')"
+                  >
+                    🔄 Update Status
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noProgress>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ DONE Tickets -->
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white text-center fw-bold">DONE</div>
+        <div class="card-body bg-light-subtle">
+          <ng-container *ngIf="groupedTickets['CLOSED']?.length; else noDone">
+            <div
+              *ngFor="let t of groupedTickets['CLOSED']"
+              class="card mb-3 shadow-sm ticket-card small-card"
+            >
+              <div class="card-body">
+                <h6 class="card-title fw-semibold">{{ t.title }}</h6>
+                <p class="card-text text-muted small mb-2">{{ t.description }}</p>
+
+                <button
+                  class="btn btn-sm btn-outline-primary w-100 mb-2"
+                  (click)="viewTicket(t.id!)"
+                >
+                  View Ticket
+                </button>
+
+                <!-- ✅ Status Update -->
+                <div
+                  *ngIf="isAdmin || t.reporterId === userId || t.assigneeId === userId"
+                  class="mt-2"
+                >
+                  <label class="form-label small text-muted">Change Status:</label>
+                  <select [(ngModel)]="t.status" class="form-select form-select-sm mb-2">
+                    <option value="OPEN">OPEN</option>
+                    <option value="ASSIGNED">ASSIGNED</option>
+                    <option value="IN_PROGRESS">IN PROGRESS</option>
+                    <option value="CLOSED">DONE</option>
+                  </select>
+                  <button
+                    class="btn btn-sm btn-outline-primary w-100"
+                    (click)="updateStatus(t, t.status || '')"
+                  >
+                    Update Status
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noDone>
+            <p class="text-muted text-center">No tickets</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="container mt-4">
+  <h2 class="mb-3 text-center">
+    {{ isAdmin ? 'All Projects (Admin View)' : 'User ' + userId + "'s Projects" }}
+  </h2>
+
+  <!-- ✅ Add Project Button (Admin Only) -->
+  <div *ngIf="isAdmin" class="text-center mb-3">
+    <button class="btn btn-success" (click)="toggleAddProject()">+ Add New Project</button>
+  </div>
+
+  <!-- ✅ Add Project Form -->
+  <div *ngIf="showAddProject" class="card p-3 mb-4">
+    <h5 class="mb-3 text-center">Create New Project</h5>
+    <form (ngSubmit)="createProject()" #projectForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Project Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="name"
+          [(ngModel)]="newProject.name"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea
+          class="form-control"
+          name="description"
+          [(ngModel)]="newProject.description"
+          required
+        ></textarea>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="!projectForm.valid">
+          Create
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="toggleAddProject()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- No projects -->
+  <div *ngIf="projects.length === 0" class="alert alert-warning text-center">
+    No projects found {{ isAdmin ? '' : 'for this user.' }}
+  </div>
+
+  <!-- Projects Table -->
+  <table *ngIf="projects.length > 0" class="table table-striped table-bordered">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>View Tickets</th>
+        <th *ngIf="isAdmin">Add Users</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let p of projects">
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.description }}</td>
+        <td>{{ p.status }}</td>
+        <td>{{ p.createdAt | date : 'short' }}</td>
+
+        <!-- View Tickets Button -->
+        <td class="text-center">
+          <button class="btn btn-primary btn-sm" (click)="goToTickets(p.id!)">View Tickets</button>
+        </td>
+
+        <!-- Add Users (only for Admin) -->
+        <td *ngIf="isAdmin" class="text-center">
+          <div class="d-flex justify-content-center align-items-center gap-2">
+            <select
+              class="form-select form-select-sm w-auto"
+              [(ngModel)]="selectedUser[p.id!]"
+              name="userSelect{{ p.id }}"
+            >
+              <option value="" disabled selected>Select User</option>
+              <option *ngFor="let u of getAvailableUsersForProject(p)" [ngValue]="u.id">
+                {{ u.firstName }} {{ u.lastName }}
+              </option>
+            </select>
+
+            <button class="btn btn-success btn-sm" (click)="addMemberToProject(p.id!)">Add</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

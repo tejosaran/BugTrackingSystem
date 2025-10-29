@@ -1,0 +1,118 @@
+<div class="register-container">
+  <h2>Register</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <!-- Username -->
+    <div class="form-group">
+      <label>Username</label>
+      <input
+        type="text"
+        formControlName="username"
+        placeholder="Enter username"
+        [ngClass]="{ 'is-invalid': submitted && registerForm.controls['username'].invalid }"
+      />
+      <div
+        class="error"
+        *ngIf="submitted && registerForm.controls['username'].errors?.['required']"
+      >
+        Username is required
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="Enter email"
+        [ngClass]="{ 'is-invalid': submitted && registerForm.controls['email'].invalid }"
+      />
+      <div class="error" *ngIf="submitted && registerForm.controls['email'].errors?.['required']">
+        Email is required
+      </div>
+    </div>
+
+    <!-- First & Last Name -->
+    <div class="form-row">
+      <div class="form-group half">
+        <label>First Name</label>
+        <input
+          type="text"
+          formControlName="firstName"
+          placeholder="Enter first name"
+          [ngClass]="{ 'is-invalid': submitted && registerForm.controls['firstName'].invalid }"
+        />
+        <div
+          class="error"
+          *ngIf="submitted && registerForm.controls['firstName'].errors?.['required']"
+        >
+          First name is required
+        </div>
+      </div>
+
+      <div class="form-group half">
+        <label>Last Name</label>
+        <input
+          type="text"
+          formControlName="lastName"
+          placeholder="Enter last name"
+          [ngClass]="{ 'is-invalid': submitted && registerForm.controls['lastName'].invalid }"
+        />
+        <div
+          class="error"
+          *ngIf="submitted && registerForm.controls['lastName'].errors?.['required']"
+        >
+          Last name is required
+        </div>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Enter password"
+        [ngClass]="{ 'is-invalid': submitted && registerForm.controls['password'].invalid }"
+      />
+      <div
+        class="error"
+        *ngIf="submitted && registerForm.controls['password'].errors?.['required']"
+      >
+        Password is required
+      </div>
+    </div>
+
+    <!-- Roles (Multiple selection) -->
+    <div class="form-group roles-group">
+      <label>Select Roles</label>
+      <div class="roles">
+        <label>
+          <input type="checkbox" [value]="1" (change)="onRoleChange($event)" /> Manager
+        </label>
+        <label>
+          <input type="checkbox" [value]="2" (change)="onRoleChange($event)" /> Developer
+        </label>
+        <label>
+          <input type="checkbox" [value]="3" (change)="onRoleChange($event)" /> Tester
+        </label>
+      </div>
+      <div class="error" *ngIf="submitted && registerForm.controls['roleIds'].value.length === 0">
+        Please select at least one role
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn">Register</button>
+  </form>
+
+  <!-- Back to Login -->
+  <div class="login-link">
+    <p>
+      Already have an account?
+      <a (click)="goToLogin()">Login here</a>
+    </p>
+  </div>
+</div>

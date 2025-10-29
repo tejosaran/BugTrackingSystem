@@ -1,0 +1,73 @@
+/* ===== NAVBAR CONTAINER ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #0066ff, #00c6ff);
+  padding: 14px 28px;
+  color: white;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== BRAND TITLE (KIRA) ===== */
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: #ffeaa7;
+}
+
+/* ===== RIGHT SECTION (LOGOUT BUTTON) ===== */
+.right-section {
+  display: flex;
+  align-items: center;
+}
+
+/* Logout button styling */
+.right-section button {
+  background-color: #ffffff;
+  color: #0066ff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.right-section button:hover {
+  background-color: #0056b3;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .navbar a {
+    font-size: 20px;
+  }
+
+  .right-section button {
+    width: 100%;
+    padding: 10px;
+  }
+}

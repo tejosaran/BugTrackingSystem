@@ -1,0 +1,8 @@
+export interface UserRegister {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  roleIds: number[]; // Set<Long> in Java → number[] in TypeScript
+}
