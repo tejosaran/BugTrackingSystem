@@ -27,6 +27,7 @@ export const routes: Routes = [
   {
     path: 'users/:userId/projects/:projectId/tickets/:ticketId/comments',
     component: Commentscomponent,
+    
     canActivate: [AuthGuard], 
   },
 
