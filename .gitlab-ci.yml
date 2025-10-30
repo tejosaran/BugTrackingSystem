@@ -93,7 +93,7 @@ build_and_push:
 # # ---------- DEPLOY TO EC2 ----------
 # deploy_to_ec2:
 #   stage: deploy
-#   image: alpine:latest
+#   image: alpine:
 #   before_script:
 #     - apk add --no-cache openssh-client git
 #     - mkdir -p ~/.ssh
