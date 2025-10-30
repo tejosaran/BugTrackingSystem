@@ -104,15 +104,25 @@ deploy_to_ec2:
     - ping -c 2 $EC2_HOST || echo "⚠️ Unable to ping EC2"
     - echo "🔑 Attempting to fetch SSH key..."
     - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts || (echo "❌ SSH keyscan failed!" && exit 1)
-  script:
-    - echo "🚀 Deploying application to EC2..."
-    - |
-      ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "
-        cd /home/ubuntu/BugTrackingSystem &&
-        docker-compose down &&
-        docker-compose pull &&
-        docker-compose up -d --build
-      "
+ script:
+  - echo "🚀 Deploying application to EC2..."
+  - |
+    ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "
+      set -e
+      mkdir -p /home/ubuntu/BugTrackingSystem &&
+      cd /home/ubuntu/BugTrackingSystem &&
+      if [ ! -f docker-compose.yml ]; then
+        echo '📥 Cloning repo (first-time setup)...'
+        git clone https://gitlab.com/tejosaran/bug-tracking-system.git . 
+      else
+        echo '🔄 Pulling latest changes...'
+        git pull origin main
+      fi &&
+      docker compose down || true &&
+      docker compose pull &&
+      docker compose up -d --build
+    "
+
   environment:
     name: production
     url: http://$EC2_HOST
