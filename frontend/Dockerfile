@@ -12,7 +12,7 @@ COPY . .
 # ⚡ Build normal client (disable SSR)
 RUN npm run build -- --configuration production
 
-
+ 
 
 
 # Stage 2: Serve with Nginx
